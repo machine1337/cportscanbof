@@ -64,9 +64,13 @@ static unsigned long ip2ulong(const char *ip) {
 }
 
 static void ulong2ip(unsigned long ip, char *buf) {
-    unsigned char *o = (unsigned char*)&ip;
+    int o[4];
     char tmp[8];
     int p = 0, i, j;
+    o[0] = (ip >> 24) & 0xFF;
+    o[1] = (ip >> 16) & 0xFF;
+    o[2] = (ip >> 8) & 0xFF;
+    o[3] = ip & 0xFF;
     for (i = 0; i < 4; i++) {
         my_itoa(o[i], tmp);
         for (j = 0; tmp[j]; j++) buf[p++] = tmp[j];
@@ -169,7 +173,7 @@ static void expand_cidr(const char *cidr, char *out_ips, int *cnt) {
     unsigned long start, end, i, mask;
     
     parse_cidr(cidr, ipb, &pre);
-    if (pre < 24 || pre > 32) return;
+    if (pre < 8 || pre > 32) return;
     
     start = ip2ulong(ipb);
     mask = 0xFFFFFFFF << (32 - pre);
